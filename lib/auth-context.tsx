@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user && pathname !== "/login") {
         router.push("/login")
       } else if (user && pathname === "/login") {
-        router.push("/")
+        router.push("/dashboard")
       }
     })
 
