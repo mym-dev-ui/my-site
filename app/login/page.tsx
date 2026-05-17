@@ -6,7 +6,7 @@ import { signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("trre@admin.oi")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -21,17 +21,15 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, email, password)
       router.push("/dashboard")
     } catch (err: any) {
-      console.error("Login error:", err)
-      if (err.code === "auth/invalid-credential") {
+      console.error("Login error:", err.code, err.message)
+      if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
         setError("البريد الإلكتروني أو كلمة المرور غير صحيحة")
-      } else if (err.code === "auth/user-not-found") {
-        setError("المستخدم غير موجود")
-      } else if (err.code === "auth/wrong-password") {
-        setError("كلمة المرور غير صحيحة")
       } else if (err.code === "auth/too-many-requests") {
         setError("تم تجاوز عدد المحاولات. يرجى المحاولة لاحقاً")
+      } else if (err.code === "auth/network-request-failed") {
+        setError("خطأ في الاتصال بالإنترنت. تحقق من اتصالك")
       } else {
-        setError("حدث خطأ أثناء تسجيل الدخول")
+        setError(`حدث خطأ أثناء تسجيل الدخول (${err.code ?? "unknown"})`)
       }
     } finally {
       setLoading(false)
